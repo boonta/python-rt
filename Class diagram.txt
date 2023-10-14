@@ -1,0 +1,94 @@
+Class diagram
+
+- Main Renderer
+- Integrator 
+- Light 
+- Material 
+- Shape
+
+
+
+Ray tracing in one weekend
+
+Class Vec3
+
+attributes:
+    double e0,e1,e2
+    double x,y,z
+methods:
+    addition
+    minus
+    multiplication
+    division by a constant
+    length
+    dot product
+    cross product
+    unit vector
+
+
+Class Ray 
+
+attributes:
+    Vec3 origin
+    Vec3 direction
+methods:
+    at(double t) --> ray propagation
+
+
+Class Camera
+
+attributes:
+    camera type
+    focal length
+    aspect ratio
+    field of view (vertical)
+    number of samples
+    viewport height
+    viewport width
+    camera origin
+    camera lookat
+    camera lookfrom
+    image width
+    image height
+
+
+Class Material
+attributes:
+
+methods:
+    scattering()
+
+
+Class Lambertian::Material
+attributes:
+    double albedo
+methods:
+    scattering()
+
+Class Mirror::Material
+attributes:
+    double albedo
+methods:
+    scattering()
+
+
+Class Object
+attributes:
+
+methods:
+    intersect()
+
+Class Sphere::Object
+attributes:
+    Vec3 center
+    double radius
+    Material material
+methods:
+    intersect()
+
+Class Scene
+attributes:
+
+methods:
+    add_object()
+    
