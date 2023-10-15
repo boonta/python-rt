@@ -126,8 +126,6 @@ class Interval:
     def surrounds(self, x):
         return self.min_val < x and x < self.max_val
     
-    def 
-
     @staticmethod
     def Empty():
         return Interval(+infinity_number, -infinity_number)
