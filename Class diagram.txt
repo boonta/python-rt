@@ -91,4 +91,5 @@ attributes:
 
 methods:
     add_object()
-    
+    find_intersection()
+

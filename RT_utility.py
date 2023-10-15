@@ -90,3 +90,48 @@ class Color(Vec3):
     
     def __neg__(self):
         return Color(-self.e[0], -self.e[1], -self.e[2])
+
+
+class Hitinfo:
+    def __init__(self, p, vNormal, t) -> None:
+        self.point = p
+        self.normal = vNormal
+        self.t = t
+        self.front_face = True
+        pass
+
+    def set_face_normal(self, vRay, outwardNormal):
+        self.front_face = Vec3.dot_product(vRay.getDirection(), outwardNormal) < 0
+        if self.front_face:
+            self.normal = outwardNormal
+        else:
+            self.normal = -outwardNormal
+        pass
+
+    def getT(self):
+        return self.t
+    
+    def getNormal(self):
+        return self.normal
+    
+class Interval:
+    def __init__(self, minval, maxval) -> None:
+        self.min_val = minval
+        self.max_val = maxval 
+        pass
+
+    def contains(self, x):
+        return self.min_val <= x and x <= self.max_val
+    
+    def surrounds(self, x):
+        return self.min_val < x and x < self.max_val
+    
+    def 
+
+    @staticmethod
+    def Empty():
+        return Interval(+infinity_number, -infinity_number)
+    
+    @staticmethod
+    def Universe():
+        return Interval(-infinity_number, +infinity_number)

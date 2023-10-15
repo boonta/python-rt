@@ -1,5 +1,6 @@
 # Scene class
 import RT_object as rto
+import RT_utility as rtu
 import numpy as np
 
 class Scene:
@@ -25,6 +26,22 @@ class Scene:
                 self.hit_list = hinfo
 
         return found_hit
+
+    def find_intersection(self, vRay, cInterval):
+
+        np_obj_list = np.array(self.obj_list)
+        found_hit = False
+        closest_tmax = cInterval.max_val
+        hinfo = None
+        for obj in np_obj_list:
+            hinfo = obj.intersect(vRay, rtu.Interval(cInterval.min_val, closest_tmax))
+            if hinfo is not None:
+                closest_tmax = hinfo.getT()
+                found_hit = True
+                self.hit_list = hinfo
+
+        return found_hit
+
 
     def getHitNormalAt(self, idx):
         return self.hit_list[idx].getNormal() 

@@ -9,17 +9,23 @@ def background_color(rGen_ray):
     a = (unit_direction.y() + 1.0)*0.5
     return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
 
+# def get_color(rGen_ray, scene):
+
+#     found_hit = scene.find_intersection(rGen_ray, 0, rtu.infinity_number)
+#     if found_hit == True:
+#         tmpN = scene.getHitList().getNormal()
+#         return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
+
+#     return background_color(rGen_ray)
+
 def get_color(rGen_ray, scene):
 
-    found_hit = scene.find_intersection(rGen_ray, 0, rtu.infinity_number)
+    found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0, rtu.infinity_number))
     if found_hit == True:
         tmpN = scene.getHitList().getNormal()
         return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
 
-    unit_direction = rtu.Vec3.unit_vector(rGen_ray.getDirection())
-    a = (unit_direction.y() + 1.0)*0.5
-    return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
-
+    return background_color(rGen_ray)
 
 def render():
     main_camera = rtc.Camera()
