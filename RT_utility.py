@@ -2,7 +2,13 @@
 import math
 import numpy as np
 from PIL import Image as im
+import sys
 
+global infinity_number
+global pi 
+
+infinity_number = sys.float_info.max
+pi = 3.1415926535897932385
 
 class Vec3:
     def __init__(self, e0=0.0, e1=0.0, e2=0.0) -> None:
@@ -38,7 +44,7 @@ class Vec3:
         return Vec3(-self.e[0], -self.e[1], -self.e[2])
 
     def printout(self):
-        print('{},{},{}'.format(self.e[0], self.e[1], self.e[2]))
+        print('{%.5f},{%.5f},{%.5f}'.format(self.e[0], self.e[1], self.e[2]))
 
     @staticmethod
     def unit_vector(v):
@@ -70,3 +76,17 @@ class Color(Vec3):
     def write_to_256(self):
         return Color(int(self.e[0]*255), int(self.e[1]*255), int(self.e[2]*255))
     
+    def __truediv__(self, val):
+        return Color(self.e[0]/val, self.e[1]/val, self.e[2]/val)
+    
+    def __add__(self, vec):
+        return Color(self.e[0] + vec.r(), self.e[1] + vec.g(), self.e[2] + vec.b())
+    
+    def __sub__(self, vec):
+        return Color(self.e[0] - vec.r(), self.e[1] - vec.g(), self.e[2] - vec.b())
+    
+    def __mul__(self, val):
+        return Color(self.e[0]*val, self.e[1]*val, self.e[2]*val)
+    
+    def __neg__(self):
+        return Color(-self.e[0], -self.e[1], -self.e[2])
