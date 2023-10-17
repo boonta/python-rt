@@ -10,6 +10,12 @@ global pi
 infinity_number = sys.float_info.max
 pi = 3.1415926535897932385
 
+def random_double(min=0.0, max=1.0):
+    return np.random.uniform(min, max)
+
+def linear_to_gamma(val, gammaVal):
+    return math.pow(val, 1.0/gammaVal)
+
 class Vec3:
     def __init__(self, e0=0.0, e1=0.0, e2=0.0) -> None:
         self.e = [e0, e1, e2]
@@ -44,7 +50,11 @@ class Vec3:
         return Vec3(-self.e[0], -self.e[1], -self.e[2])
 
     def printout(self):
-        print('{%.5f},{%.5f},{%.5f}'.format(self.e[0], self.e[1], self.e[2]))
+        print('{},{},{}'.format(self.e[0], self.e[1], self.e[2]))
+
+    def near_zero(self):
+        tol = 1e-8
+        return (math.fabs(self.e[0]) < tol) and (math.fabs(self.e[1]) < tol) and (math.fabs(self.e[2]) < tol)
 
     @staticmethod
     def unit_vector(v):
@@ -60,6 +70,29 @@ class Vec3:
     def dot_product(u, v):
         return u.x()*v.x() + u.y()*v.y() + u.z()*v.z()
     
+    @staticmethod
+    def random_vec3(minval=0.0, maxval=1.0):
+        return Vec3(random_double(minval, maxval), random_double(minval, maxval), random_double(minval, maxval))
+
+    @staticmethod
+    def random_vec3_in_unit_sphere():
+        while True:
+            p = Vec3.random_vec3(-1, 1)
+            if p.len_squared() < 1:
+                return p 
+    
+    @staticmethod
+    def random_vec3_unit():
+        return Vec3.unit_vector(Vec3.random_vec3_in_unit_sphere())
+
+    @staticmethod
+    def random_vec3_on_hemisphere(vNormal):
+        in_unit_sphere = Vec3.random_vec3_unit()
+        if Vec3.dot_product(in_unit_sphere, vNormal) > 0.0:
+            return in_unit_sphere
+        else:
+            return -in_unit_sphere
+
 class Color(Vec3):
     def __init__(self, e0=0, e1=0, e2=0) -> None:
         super().__init__(e0, e1, e2)
@@ -86,18 +119,23 @@ class Color(Vec3):
         return Color(self.e[0] - vec.r(), self.e[1] - vec.g(), self.e[2] - vec.b())
     
     def __mul__(self, val):
+        if isinstance(val, Color):
+            return Color(self.e[0]*val.r(), self.e[1]*val.g(), self.e[2]*val.b())
+
         return Color(self.e[0]*val, self.e[1]*val, self.e[2]*val)
     
+
     def __neg__(self):
         return Color(-self.e[0], -self.e[1], -self.e[2])
 
 
 class Hitinfo:
-    def __init__(self, p, vNormal, t) -> None:
-        self.point = p
+    def __init__(self, vP, vNormal, fT, mMat=None) -> None:
+        self.point = vP
         self.normal = vNormal
-        self.t = t
+        self.t = fT
         self.front_face = True
+        self.mat = mMat
         pass
 
     def set_face_normal(self, vRay, outwardNormal):
@@ -114,6 +152,18 @@ class Hitinfo:
     def getNormal(self):
         return self.normal
     
+    def getP(self):
+        return self.point
+    
+    def getMaterial(self):
+        return self.mat
+    
+class Scatterinfo:
+    def __init__(self, vRay, fAttenuation) -> None:
+        self.scattered_ray = vRay
+        self.attenuation_color = fAttenuation
+
+
 class Interval:
     def __init__(self, minval, maxval) -> None:
         self.min_val = minval
@@ -126,6 +176,14 @@ class Interval:
     def surrounds(self, x):
         return self.min_val < x and x < self.max_val
     
+    def clamp(self, x):
+        if x < self.min_val:
+            return self.min_val
+        if x > self.max_val:
+            return self.max_val
+        return x
+    
+
     @staticmethod
     def Empty():
         return Interval(+infinity_number, -infinity_number)

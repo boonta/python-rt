@@ -1,6 +1,7 @@
 # object class
 import RT_ray as rtr
 import RT_utility as rtu
+import RT_material as rtm
 import math
 
 class Object:
@@ -17,10 +18,14 @@ class Object:
         pass
 
 class Sphere(Object):
-    def __init__(self, vCenter, fRadius) -> None:
+    def __init__(self, vCenter, fRadius, mMat=None) -> None:
         super().__init__()
         self.center = vCenter
         self.radius = fRadius
+        self.material = mMat
+
+    def add_material(self, mMat):
+        self.material = mMat
 
     def printInfo(self):
         self.center.printout()        
@@ -62,7 +67,7 @@ class Sphere(Object):
         hit_t = root
         hit_point = vRay.at(root)
         hit_normal = (hit_point - self.center) / self.radius
-        hinfo = rtu.Hitinfo(hit_point, hit_normal, hit_t)
+        hinfo = rtu.Hitinfo(hit_point, hit_normal, hit_t, self.material)
 
         hinfo.set_face_normal(vRay, hit_normal) 
         return hinfo
@@ -88,7 +93,7 @@ class Sphere(Object):
         hit_t = root
         hit_point = vRay.at(root)
         hit_normal = (hit_point - self.center) / self.radius
-        hinfo = rtu.Hitinfo(hit_point, hit_normal, hit_t)
+        hinfo = rtu.Hitinfo(hit_point, hit_normal, hit_t, self.material)
 
         hinfo.set_face_normal(vRay, hit_normal) 
         return hinfo
