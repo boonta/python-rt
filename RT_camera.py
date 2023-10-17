@@ -16,7 +16,7 @@ class Camera:
         self.center = rtu.Vec3()
         self.intensity = rtu.Interval(0.000, 0.999)
         self.samples_per_pixel = 10
-        self.max_depth = 2
+        self.max_depth = 4
 
         self.init_camera()
         

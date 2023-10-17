@@ -32,13 +32,17 @@ def render():
 
     mat_ground = rtm.Lambertian(rtu.Color(0.8, 0.8, 0.0))
     mat_center = rtm.Lambertian(rtu.Color(0.7, 0.3, 0.3))
+    mat_glass1 = rtm.Mirror(rtu.Color(0.8, 0.8, 0.8))
+    mat_glass2 = rtm.Metal(rtu.Color(0.8, 0.6, 0.2), 0.5)
 
     world = rts.Scene()
-    world.add_object(rto.Sphere(rtu.Vec3(0,0,-1), 0.5, mat_ground))
-    world.add_object(rto.Sphere(rtu.Vec3(0,-100.5,-1), 100, mat_center))
+    world.add_object(rto.Sphere(rtu.Vec3(0,-100.5,-1), 100, mat_ground))
+    world.add_object(rto.Sphere(rtu.Vec3(0,0,-1), 0.5, mat_center))
+    world.add_object(rto.Sphere(rtu.Vec3(-1.0,0,-1), 0.5, mat_glass1))
+    world.add_object(rto.Sphere(rtu.Vec3(1.0,0,-1), 0.5, mat_glass2))
 
     main_camera.render(world)
-    main_camera.write_img('test_renderer6.png')
+    main_camera.write_img('test_renderer8.png')
 
 
 if __name__ == "__main__":
