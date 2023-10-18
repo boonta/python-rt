@@ -4,6 +4,7 @@ import RT_utility as rtu
 import RT_ray as rtr
 
 import numpy as np
+import math
 from PIL import Image as im
 
 class Camera:
@@ -12,11 +13,15 @@ class Camera:
         self.aspect_ratio = 16.0/9.0
         self.focal_length = 1.0
         self.img_width = 400
-        self.viewport_height = 2.0
         self.center = rtu.Vec3()
         self.intensity = rtu.Interval(0.000, 0.999)
         self.samples_per_pixel = 10
         self.max_depth = 4
+        self.vertical_fov = 90
+        self.look_from = rtu.Vec3(0, 0, -1)
+        self.look_at = rtu.Vec3(0, 0, 0)
+        self.vec_up = rtu.Vec3(0, 1, 0)
+
 
         self.init_camera()
         
@@ -32,12 +37,27 @@ class Camera:
 
     def init_camera(self):
         self.img_height = self.compute_img_height()
+
+        self.focal_length = (self.look_from - self.look_at).len()
+
+        self.center = self.look_from
+        
+        h = math.tan(math.radians(self.vertical_fov)/2.0)
+        self.viewport_height = 2.0 * h * self.focal_length
         self.viewport_width = self.compute_viewport_width()
-        self.viewport_u = rtu.Vec3(self.viewport_width, 0, 0)
-        self.viewport_v = rtu.Vec3(0, -self.viewport_height, 0)
+
+        self.camera_frame_w = rtu.Vec3.unit_vector(self.look_from - self.look_at)
+        self.camera_frame_u = rtu.Vec3.unit_vector(rtu.Vec3.cross_product(self.vec_up, self.camera_frame_w))
+        self.camera_frame_v = rtu.Vec3.cross_product(self.camera_frame_w, self.camera_frame_u)
+
+        # self.viewport_u = rtu.Vec3(self.viewport_width, 0, 0)
+        # self.viewport_v = rtu.Vec3(0, -self.viewport_height, 0)
+        self.viewport_u = self.camera_frame_u*self.viewport_width
+        self.viewport_v = -self.camera_frame_v*self.viewport_height
         self.pixel_du = self.viewport_u / self.img_width
         self.pixel_dv = self.viewport_v / self.img_height
-        self.viewport_upper_left = self.center - rtu.Vec3(0, 0, self.focal_length) - self.viewport_u/2 - self.viewport_v/2
+        # self.viewport_upper_left = self.center - rtu.Vec3(0, 0, self.focal_length) - self.viewport_u/2 - self.viewport_v/2
+        self.viewport_upper_left = self.center - (self.camera_frame_w*self.focal_length) - self.viewport_u/2 - self.viewport_v/2
         self.pixel00_location = self.viewport_upper_left + (self.pixel_du+self.pixel_dv)*0.5
         self.film = np.zeros((self.img_height, self.img_width, self.img_spectrum))
 
@@ -133,7 +153,7 @@ class Camera:
         if found_hit == True:
             hinfo = scene.getHitList()
             hmat = hinfo.getMaterial()
-            sinfo = hmat.scattering(rGen_ray, hinfo.getP(), hinfo.getNormal())
+            sinfo = hmat.scattering(rGen_ray, hinfo)
 
             return self.compute_scattering(rtr.Ray(hinfo.getP(), sinfo.scattered_ray.getDirection()), maxDepth-1, scene) * sinfo.attenuation_color
 
