@@ -75,6 +75,13 @@ class Vec3:
         return Vec3(random_double(minval, maxval), random_double(minval, maxval), random_double(minval, maxval))
 
     @staticmethod
+    def random_vec3_in_unit_disk():
+        while True:
+            p = Vec3(random_double(-1,1), random_double(-1,1), 0)
+            if p.len_squared() < 1:
+                return p
+
+    @staticmethod
     def random_vec3_in_unit_sphere():
         while True:
             p = Vec3.random_vec3(-1, 1)
