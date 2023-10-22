@@ -20,8 +20,8 @@ def render():
     main_camera.look_at = rtu.Vec3(0, 0, -1)
     main_camera.vec_up = rtu.Vec3(0, 1, 0)
 
-    defocus_angle = 10.0
-    focus_distance = 3.4
+    defocus_angle =0.0
+    focus_distance = 10.0
     main_camera.init_camera(defocus_angle, focus_distance)
     # add objects to the scene
 
@@ -42,7 +42,7 @@ def render():
     pathRenderer = rtren.Renderer(main_camera, pathtracing, world)
 
     pathRenderer.render()
-    pathRenderer.write_img2png('test_renderer12.png')
+    pathRenderer.write_img2png('test_renderer13.png')
 
 
 if __name__ == "__main__":
