@@ -88,10 +88,10 @@ class Camera:
         self.film[heightId,widthId,2] = self.intensity.clamp(b)
 
 
-    def write_img(self, strPng_filename):
-        png_film = self.film * 255
-        data = im.fromarray(png_film.astype(np.uint8))
-        data.save(strPng_filename)
+    # def write_img(self, strPng_filename):
+    #     png_film = self.film * 255
+    #     data = im.fromarray(png_film.astype(np.uint8))
+    #     data.save(strPng_filename)
 
     def get_center_ray(self, i, j):
         pixel_center = self.pixel00_location + (self.pixel_du*i) + (self.pixel_dv*j)
@@ -114,66 +114,66 @@ class Camera:
         py = -0.5 + rtu.random_double()
         return (vDu*px) + (vDv*py)
 
-    def render(self, scene):
+    # def render(self, scene):
 
-        for j in range(self.img_height):
-            for i in range(self.img_width):
+    #     for j in range(self.img_height):
+    #         for i in range(self.img_width):
 
-                # generated_ray = self.get_center_ray(i, j)
-                # pixel_color = self.get_color(generated_ray, scene)
+    #             # generated_ray = self.get_center_ray(i, j)
+    #             # pixel_color = self.get_color(generated_ray, scene)
 
-                pixel_color = rtu.Color(0,0,0)
-                for ssp in range(self.samples_per_pixel):
-                    generated_ray = self.get_ray(i, j)
-                    # pixel_color = pixel_color + self.get_color(generated_ray, scene)
-                    pixel_color = pixel_color + self.compute_scattering(generated_ray, self.max_depth, scene)
+    #             pixel_color = rtu.Color(0,0,0)
+    #             for ssp in range(self.samples_per_pixel):
+    #                 generated_ray = self.get_ray(i, j)
+    #                 # pixel_color = pixel_color + self.get_color(generated_ray, scene)
+    #                 pixel_color = pixel_color + self.compute_scattering(generated_ray, self.max_depth, scene)
 
 
-                self.write_to_film(i, j, pixel_color)
-        pass
+    #             self.write_to_film(i, j, pixel_color)
+    #     pass
 
-    def background_color(self, rGen_ray):
-        unit_direction = rtu.Vec3.unit_vector(rGen_ray.getDirection())
-        a = (unit_direction.y() + 1.0)*0.5
-        return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
+    # def background_color(self, rGen_ray):
+    #     unit_direction = rtu.Vec3.unit_vector(rGen_ray.getDirection())
+    #     a = (unit_direction.y() + 1.0)*0.5
+    #     return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
 
-    def get_color(self, rGen_ray, scene):
+    # def get_color(self, rGen_ray, scene):
 
-        found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
-        if found_hit == True:
-            tmpN = scene.getHitList().getNormal()
-            return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
+    #     found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
+    #     if found_hit == True:
+    #         tmpN = scene.getHitList().getNormal()
+    #         return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
 
-        return self.background_color(rGen_ray)
+    #     return self.background_color(rGen_ray)
+
+    # # def compute_scattering(self, rGen_ray, maxDepth, scene):
+
+    # #     if maxDepth <= 0:
+    # #         return rtu.Color()
+
+    # #     found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0, rtu.infinity_number))
+    # #     if found_hit == True:
+    # #         hinfo = scene.getHitList()
+    # #         scattered_direction = rtu.Vec3.random_vec3_on_hemisphere(hinfo.getNormal())
+
+    # #         return self.compute_scattering(rtr.Ray(hinfo.getP(), scattered_direction), maxDepth-1, scene) *0.1
+
+    # #     return self.background_color(rGen_ray)
 
     # def compute_scattering(self, rGen_ray, maxDepth, scene):
 
     #     if maxDepth <= 0:
     #         return rtu.Color()
 
-    #     found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0, rtu.infinity_number))
+    #     found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
     #     if found_hit == True:
     #         hinfo = scene.getHitList()
-    #         scattered_direction = rtu.Vec3.random_vec3_on_hemisphere(hinfo.getNormal())
+    #         hmat = hinfo.getMaterial()
+    #         sinfo = hmat.scattering(rGen_ray, hinfo)
 
-    #         return self.compute_scattering(rtr.Ray(hinfo.getP(), scattered_direction), maxDepth-1, scene) *0.1
+    #         return self.compute_scattering(rtr.Ray(hinfo.getP(), sinfo.scattered_ray.getDirection()), maxDepth-1, scene) * sinfo.attenuation_color
 
     #     return self.background_color(rGen_ray)
-
-    def compute_scattering(self, rGen_ray, maxDepth, scene):
-
-        if maxDepth <= 0:
-            return rtu.Color()
-
-        found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
-        if found_hit == True:
-            hinfo = scene.getHitList()
-            hmat = hinfo.getMaterial()
-            sinfo = hmat.scattering(rGen_ray, hinfo)
-
-            return self.compute_scattering(rtr.Ray(hinfo.getP(), sinfo.scattered_ray.getDirection()), maxDepth-1, scene) * sinfo.attenuation_color
-
-        return self.background_color(rGen_ray)
 
 
 class Lens():
