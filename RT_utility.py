@@ -137,12 +137,13 @@ class Color(Vec3):
 
 
 class Hitinfo:
-    def __init__(self, vP, vNormal, fT, mMat=None) -> None:
+    def __init__(self, vP, vNormal, fT, mMat=None, tcTex=None) -> None:
         self.point = vP
         self.normal = vNormal
         self.t = fT
         self.front_face = True
         self.mat = mMat
+        self.texture_uv = tcTex
         pass
 
     def set_face_normal(self, vRay, outwardNormal):
@@ -164,7 +165,10 @@ class Hitinfo:
     
     def getMaterial(self):
         return self.mat
-    
+
+    def getTextureUV(self):
+        return self.texture_uv
+
 class Scatterinfo:
     def __init__(self, vRay, fAttenuation) -> None:
         self.scattered_ray = vRay
@@ -190,7 +194,11 @@ class Interval:
             return self.max_val
         return x
     
-
+    @staticmethod
+    def near_zero(self, x, fTol=1e-8):
+        tol = fTol
+        return math.fabs(x) < tol
+    
     @staticmethod
     def Empty():
         return Interval(+infinity_number, -infinity_number)
