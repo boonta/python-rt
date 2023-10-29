@@ -194,8 +194,11 @@ class Interval:
             return self.max_val
         return x
     
+    def size(self):
+        return self.max_val - self.min_val
+    
     @staticmethod
-    def near_zero(self, x, fTol=1e-8):
+    def near_zero(x, fTol=1e-8):
         tol = fTol
         return math.fabs(x) < tol
     
