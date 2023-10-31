@@ -1,5 +1,4 @@
 # Scene class
-import RT_object as rto
 import RT_utility as rtu
 import numpy as np
 
