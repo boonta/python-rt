@@ -34,6 +34,9 @@ class Material:
     def scattering(self, rRayIn, hHinfo):
         pass
 
+    def is_light(self):
+        return False
+
 class Lambertian(Material):
     def __init__(self, cAlbedo) -> None:
         super().__init__()

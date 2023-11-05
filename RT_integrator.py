@@ -18,10 +18,11 @@ class Whitted():
 
 
 class PathTracing():
-    def __init__(self) -> None:
+    def __init__(self, bDlight=True) -> None:
+        self.bool_direct_lighting = bDlight
         pass
 
-    def compute_scattering(self, rGen_ray, maxDepth, scene):
+    def compute_scattering(self, rGen_ray, scene, maxDepth):
 
         if maxDepth <= 0:
             return rtu.Color()
@@ -31,21 +32,35 @@ class PathTracing():
             hinfo = scene.getHitList()
             hmat = hinfo.getMaterial()
             sinfo = hmat.scattering(rGen_ray, hinfo)
+            if sinfo is None:   # if no scattering (light)
+                return hmat.emitting()  # emit the light color
 
-            return self.compute_scattering(rtr.Ray(hinfo.getP(), sinfo.scattered_ray.getDirection()), maxDepth-1, scene) * sinfo.attenuation_color
+            Le = rtu.Color()
+            if self.bool_direct_lighting:
+                for light in scene.point_light_list:    # for now handle only point lights
+                    tolight_dir = light.center - hinfo.getP()
+                    tolight_ray = rtr.Ray(hinfo.getP(), tolight_dir)
+                    max_distance = tolight_dir.len()
+                    occlusion_hit = scene.find_occlusion(tolight_ray, rtu.Interval(0.000001, max_distance))
+                    # if not occluded.
+                    if not occlusion_hit:
+                        # accumulate all unoccluded light
+                        Le = Le + (light.material.emitting() * (1/max_distance))
 
-        return self.background_color(rGen_ray)
+            return Le + self.compute_scattering(rtr.Ray(hinfo.getP(), sinfo.scattered_ray.getDirection()), scene, maxDepth-1) * sinfo.attenuation_color
 
-    def background_color(self, rGen_ray):
-        unit_direction = rtu.Vec3.unit_vector(rGen_ray.getDirection())
-        a = (unit_direction.y() + 1.0)*0.5
-        return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
+        return scene.getBackgroundColor()
 
-    def get_color(self, rGen_ray, scene):
+    # def background_color(self, rGen_ray):
+    #     unit_direction = rtu.Vec3.unit_vector(rGen_ray.getDirection())
+    #     a = (unit_direction.y() + 1.0)*0.5
+    #     return rtu.Color(1,1,1)*(1.0-a) + rtu.Color(0.5, 0.7, 1.0)*a
 
-        found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
-        if found_hit == True:
-            tmpN = scene.getHitList().getNormal()
-            return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
+    # def get_color(self, rGen_ray, scene):
 
-        return self.background_color(rGen_ray)
+    #     found_hit = scene.find_intersection(rGen_ray, rtu.Interval(0.000001, rtu.infinity_number))
+    #     if found_hit == True:
+    #         tmpN = scene.getHitList().getNormal()
+    #         return (rtu.Color(tmpN.x(), tmpN.y(), tmpN.z()) + rtu.Color(1,1,1))*0.5
+
+    #     return self.background_color(rGen_ray)

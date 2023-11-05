@@ -15,13 +15,16 @@ class Renderer():
         pass
 
     def render(self):
+        # gather lights to the light list
+        self.scene.find_lights()
+        
         for j in range(self.camera.img_height):
             for i in range(self.camera.img_width):
 
                 pixel_color = rtu.Color(0,0,0)
                 for ssp in range(self.camera.samples_per_pixel):
                     generated_ray = self.camera.get_ray(i, j)
-                    pixel_color = pixel_color + self.integrator.compute_scattering(generated_ray, self.camera.max_depth, self.scene)
+                    pixel_color = pixel_color + self.integrator.compute_scattering(generated_ray, self.scene, self.camera.max_depth)
 
                 self.camera.write_to_film(i, j, pixel_color)
 

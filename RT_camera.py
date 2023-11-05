@@ -79,9 +79,9 @@ class Camera:
         g = cPixelColor.g()*scale
         b = cPixelColor.b()*scale
 
-        r = rtu.linear_to_gamma(r, 2.0)
-        g = rtu.linear_to_gamma(g, 2.0)
-        b = rtu.linear_to_gamma(b, 2.0)
+        r = rtu.linear_to_gamma(r, 1.8)
+        g = rtu.linear_to_gamma(g, 1.8)
+        b = rtu.linear_to_gamma(b, 1.8)
 
         self.film[heightId,widthId,0] = self.intensity.clamp(r)
         self.film[heightId,widthId,1] = self.intensity.clamp(g)
