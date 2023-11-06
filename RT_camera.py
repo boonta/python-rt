@@ -87,12 +87,6 @@ class Camera:
         self.film[heightId,widthId,1] = self.intensity.clamp(g)
         self.film[heightId,widthId,2] = self.intensity.clamp(b)
 
-
-    # def write_img(self, strPng_filename):
-    #     png_film = self.film * 255
-    #     data = im.fromarray(png_film.astype(np.uint8))
-    #     data.save(strPng_filename)
-
     def get_center_ray(self, i, j):
         pixel_center = self.pixel00_location + (self.pixel_du*i) + (self.pixel_dv*j)
         ray_direction = pixel_center - self.center
